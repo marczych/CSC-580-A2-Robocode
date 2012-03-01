@@ -31,13 +31,19 @@ public class Leader extends TeamRobot {
    public void onScannedRobot(ScannedRobotEvent e) {
       double x = getX(), y = getY();
 
+      if (isTeammate(e.getName())) {
+         return;
+      }
+
       try {
          double distance = e.getDistance();
-         double bearing = e.getBearing();
-         double enX = x + Math.cos(bearing) * distance;
-         double enY = y + Math.sin(bearing) * distance;
+         double heading = getHeadingRadians();
+         double bearing = e.getBearing() * Math.PI / 180.0;
+         double angle = bearing + heading;
+         double enX = x + Math.sin(angle) * distance;
+         double enY = y + Math.cos(angle) * distance;
 
-         EnemyScannedEvent event = new EnemyScannedEvent(enX, enY);
+         EnemyScannedEvent event = new EnemyScannedEvent(getName(), enX, enY);
          broadcastMessage(event);
       } catch (IOException exc) {
 
